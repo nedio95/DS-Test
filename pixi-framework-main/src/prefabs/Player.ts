@@ -1,29 +1,46 @@
 import gsap from "gsap";
-import { Container } from "pixi.js";
-import SpritesheetAnimation from "../core/SpritesheetAnimation";
+import { Container, Sprite } from "pixi.js";
+//import SpritesheetAnimation from "../core/SpritesheetAnimation";
 import Keyboard from "../core/Keyboard";
-import { wait } from "../utils/misc";
+//import { wait } from "../utils/misc";
 
+/*
 enum Directions {
   LEFT = -1,
+  PASSIVE = 0,
   RIGHT = 1,
 }
+  */
 
+const sixtyDegree = (Math.PI*0.333);
+/*
 type AnimState = {
   anim: string;
   soundName?: string;
   loop?: boolean;
   speed?: number;
 };
-
+*/
 /**
  * Example class showcasing the usage of the```Animation``` and ```Keyboard``` classes
  */
 export class Player extends Container {
   private keyboard = Keyboard.getInstance();
-  anim: SpritesheetAnimation;
-  currentState: AnimState | null = null;
+  
+  private anim: Sprite; //I have no idea why, but if I try to create a sprite with ANY other name this breaks
 
+  private gameState = 0;
+  private currentDirection = 0;
+  private startingNumbers = [0, 0, 0];
+
+  //private currentRotation = 0.0;
+  private targetPosition = 0;
+  private targetDirection = 0;
+
+  //currentState: AnimState | null = null;
+
+
+  /*
   static animStates: Record<string, AnimState> = {
     idle: {
       anim: "idle",
@@ -48,7 +65,7 @@ export class Player extends Container {
       speed: 1,
     },
   };
-
+  
   config = {
     speed: 10,
     turnDuration: 0.15,
@@ -75,48 +92,153 @@ export class Player extends Container {
   };
 
   private decelerationTween?: gsap.core.Tween;
-
+  */
   constructor() {
     super();
 
-    this.anim = new SpritesheetAnimation("wizard");
+    
 
+    this.anim = Sprite.from("handle");
+    this.anim.anchor.set(0.5);
     this.addChild(this.anim);
 
-    this.setState(Player.animStates.idle);
+    this.resetGame();
 
+    //this.setState(Player.animStates.idle);
+    
     this.keyboard.onAction(({ action, buttonState }) => {
-      if (buttonState === "pressed") this.onActionPress(action);
-      else if (buttonState === "released") this.onActionRelease(action);
+      if (buttonState === "pressed") 
+        {
+          this.onActionPress(action);
+          this.gameUpdate();
+          this.updateAnimation();
+        }
+      //else if (buttonState === "released") this.onActionRelease(action);
     });
+    
   }
-
+  /*
   setState(state: AnimState) {
     this.currentState = state;
 
     return this.anim.play(state);
   }
+  */
+
+  private resetGame()
+  {
+    console.log("Game is reset");
+    this.gameState = 0;
+    this.currentDirection = (Math.random()>=0.5)? 1 : -1;
+    this.startingNumbers = [Math.floor(Math.random()*8+1), Math.floor(Math.random()*8+1), Math.floor(Math.random()*8+1)];
+    this.targetPosition = 0;
+    this.targetDirection = 0;
+    gsap.to(this.anim, 
+      {
+        rotation: 145, duration: 1
+      });
+
+    console.log("starting numbers are: " + this.startingNumbers);
+    console.log("starting dir is: " + this.currentDirection);
+  }
 
   private onActionPress(action: keyof typeof Keyboard.actions) {
     switch (action) {
       case "LEFT":
-        this.move(Directions.LEFT);
+        this.setDirection(-1);
+        //if(this.targetPosition < -9) this.targetPosition += 9;
         break;
       case "RIGHT":
-        this.move(Directions.RIGHT);
+        this.setDirection(1);
+        //if(this.targetPosition > 9) this.targetPosition -= 9;
         break;
-      case "JUMP":
-        this.jump();
+      case "DOWN":
+        this.MakeGuess();
+        //check if at correct number
+        //Yes -> move to next game state
+        //No -> Game Over -> Restart
         break;
-      case "SHIFT":
-        this.dash();
-        break;
-
       default:
         break;
     }
   }
 
+  private setDirection(value: number)
+  {
+    this.targetPosition += value;
+    this.targetDirection = value;
+  }
+
+  private MakeGuess()
+  {
+    if(Math.abs(this.targetPosition) != this.startingNumbers[this.gameState]) 
+      {
+        this.resetGame();
+        console.log("GameOver due to Wrong Guess")
+        return;
+      }
+    
+    if(this.gameState == 2)
+      {
+        //Game Over -> VICTORY
+        console.log("GameOver due to VICTORY")
+        return;
+      }
+    console.log("Good Guess")
+    this.gameState += 1;
+    this.targetPosition = 0;
+    this.currentDirection *= -1;
+    this.targetDirection = this.currentDirection;
+    console.log("Gamestate is now: " + this.gameState);
+  }
+
+  private gameUpdate()
+  {
+    if(this.targetDirection != this.currentDirection) 
+      {
+        this.resetGame();
+        console.log("GameOver due to wrong direction")
+        return;
+      }
+    if(Math.abs(this.targetPosition) > this.startingNumbers[this.gameState])
+      {
+        this.resetGame();
+        console.log("GameOver due to overrotation")
+        return;
+      }
+  }
+  
+  
+  private updateAnimation()
+  {
+    //if(this.targetPosition == 0) return;
+    
+    console.log("Rot" + this.anim.rotation);
+    console.log("Length" + this.targetPosition);
+
+    //this.anim.rotation += 1;
+    
+    //let rotateMe:boolean = true;
+
+    gsap.to(this.anim, 
+    {
+      rotation: (/*this.anim.rotation*/ + (this.targetPosition * sixtyDegree))
+    });
+    /*
+    do
+    {
+      let currentRotation = this.anim.rotation;
+      let targetRotation = this.targetDirection;
+      if((currentRotation-targetRotation)<0.05)
+        {
+          this.anim.rotation = targetRotation;
+          rotateMe = false;
+        }
+    }while(rotateMe);
+    */
+
+  }
+  /*
   onActionRelease(action: keyof typeof Keyboard.actions) {
     if (
       (action === "LEFT" && this.state.velocity.x < 0) ||
@@ -125,7 +247,8 @@ export class Player extends Container {
       this.stopMovement();
     }
   }
-
+  */
+  /*
   get jumping() {
     return this.state.jumping;
   }
@@ -143,7 +266,7 @@ export class Player extends Container {
   get dashing() {
     return this.state.dashing;
   }
-
+  
   private updateAnimState() {
     const { walk, jump, dash, idle } = Player.animStates;
 
@@ -238,4 +361,5 @@ export class Player extends Container {
 
     this.jumping = false;
   }
+  */
 }
