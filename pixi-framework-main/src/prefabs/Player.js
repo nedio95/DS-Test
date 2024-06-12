@@ -9,7 +9,8 @@ const gameNumbers = 3; //How many numbers this combination lock has.
 let shadowOffset = 20;
 export class Player extends Container {
     keyboard = Keyboard.getInstance();
-    //private door: Sprite;
+    door;
+    doorOpen;
     doorHandle;
     handleShadow;
     gameState = 0; //This tracks at what stage the player is: 0 - No correct guesses, 1 - one correct guess, 2 - two correct guesses 
@@ -20,11 +21,14 @@ export class Player extends Container {
     targetDirection = 0; //Tracks which direction the player is rotating
     constructor() {
         super();
-        /*
         this.door = Sprite.from("door");
         this.door.anchor.set(0.5);
         this.addChild(this.door);
-        */
+        this.doorOpen = Sprite.from("doorOpen");
+        this.doorOpen.anchor.set(0.5);
+        this.doorOpen.x += this.door.width / 3;
+        this.doorOpen.alpha = 0;
+        this.addChild(this.doorOpen);
         this.handleShadow = Sprite.from("handleShadow");
         this.handleShadow.anchor.set(0.5);
         this.addChild(this.handleShadow);
@@ -95,12 +99,7 @@ export class Player extends Container {
          {
             //Game Over due to VICTORY
             console.log("GameOver due to VICTORY - You won!");
-            gsap.to(this.handleShadow, {
-                x: screen.height * 2, y: -screen.width * 2, rotation: crazySpin, duration: 1
-            });
-            gsap.to(this.doorHandle, {
-                x: screen.height * 2, y: -screen.width * 2, rotation: crazySpin, duration: 1
-            });
+            this.Victory();
             return;
         }
         //Move to the next game state due to a correct guess
@@ -123,6 +122,18 @@ export class Player extends Container {
             console.log("GameOver due to overrotation");
             return;
         }
+    }
+    Victory() {
+        gsap.to(this.handleShadow, {
+            x: screen.height * 2, y: -screen.width * 2, rotation: crazySpin, duration: 1
+        });
+        gsap.to(this.doorHandle, {
+            x: screen.height * 2, y: -screen.width * 2, rotation: crazySpin, duration: 1
+        });
+        /*
+            gsap.fromTo(this.door{}, this.
+        
+            );*/
     }
     updateAnimation(rotateBy, durationLen) {
         gsap.to(this.handleShadow, {

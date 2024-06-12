@@ -1,7 +1,6 @@
 //import config from "../config";
 //import ParallaxBackground from "../prefabs/ParallaxBackground"; //We're not doing a paralax background. (for now)
 import { Player } from "../prefabs/Player";
-import { VaultDoor } from "../prefabs/VaultDoor";
 import Scene from "../core/Scene";
 //import SpineAnimation from "../core/SpineAnimation"; // We're not doing a spine anim (for now)
 import { Sprite } from "pixi.js";
@@ -9,17 +8,15 @@ import { centerObjects } from "../utils/misc";
 export default class Game extends Scene {
     name = "Game";
     player;
-    vaultDoor;
     background;
     load() {
         this.background = Sprite.from("bg"); // We don't need a paralax background for this project design -  
         //Feature idea: The player is able to look around the whole treasure room, maybe there are some hidden clues.
         this.player = new Player();
-        this.vaultDoor = new VaultDoor();
         this.rescaleBackground(window.innerWidth, window.innerHeight);
         this.placeObjects();
         //this.background.initPlayerMovement(this.player);
-        this.addChild(this.background, this.vaultDoor, this.player);
+        this.addChild(this.background, this.player);
     }
     /* No spine animations for this project scope
     async start() {
@@ -45,10 +42,6 @@ export default class Game extends Scene {
             this.placeObjects();
     }
     placeObjects() {
-        if (this.vaultDoor) {
-            this.vaultDoor.scale = this.background.scale;
-            centerObjects(this.vaultDoor);
-        }
         if (this.player) {
             this.player.scale = this.background.scale;
             centerObjects(this.player);
