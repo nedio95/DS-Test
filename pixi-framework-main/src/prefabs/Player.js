@@ -4,7 +4,7 @@ import { Container, Sprite } from "pixi.js";
 import Keyboard from "../core/Keyboard";
 //import { wait } from "../utils/misc";
 const sixtyDegree = (Math.PI * 0.333);
-//const crazySpin = 1000; //is 1000 crazy enough of a spin ?
+const crazySpin = 1000; //is 1000 crazy enough of a spin ?
 const gameNumbers = 3; //How many numbers this combination lock has. 
 export class Player extends Container {
     keyboard = Keyboard.getInstance();
@@ -22,7 +22,9 @@ export class Player extends Container {
         this.handleShadow.anchor.set(0.5);
         this.addChild(this.handleShadow);
         this.doorHandle = Sprite.from("handle");
-        this.doorHandle.anchor.set(0.55);
+        this.doorHandle.anchor.set(0.5);
+        this.doorHandle.x += 5;
+        this.doorHandle.y -= 5;
         this.doorHandle.alpha = 0.75;
         this.addChild(this.doorHandle);
         //reset the game logic
@@ -46,7 +48,9 @@ export class Player extends Container {
         this.startingNumbers = [Math.floor(Math.random() * 8 + 1), Math.floor(Math.random() * 8 + 1), Math.floor(Math.random() * 8 + 1)];
         this.targetPosition = 0;
         this.targetDirection = 0;
-        //this.updateAnimation(crazySpin, 1);
+        this.doorHandle.rotation = crazySpin;
+        this.handleShadow.rotation = crazySpin;
+        this.updateAnimation(0, 1);
         //this.updateAnimation(0.0, 0.5);
         console.log("starting numbers are: " + this.startingNumbers);
         console.log("starting dir is: " + this.currentDirection);

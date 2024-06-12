@@ -46,9 +46,7 @@ export class Player extends Container {
         {
           this.onActionPress(action);
           this.gameUpdate();
-          console.log("Rotation is" + this.currentRotation * sixtyDegree);
           this.updateAnimation((this.currentRotation * sixtyDegree), 0.5);
-          console.log("Rotation is" + this.currentRotation * sixtyDegree);
         }
     });
     
@@ -63,11 +61,11 @@ export class Player extends Container {
     this.startingNumbers = [Math.floor(Math.random()*8+1), Math.floor(Math.random()*8+1), Math.floor(Math.random()*8+1)];
     this.targetPosition = 0;
     this.targetDirection = 0;
-    this.updateAnimation(crazySpin, 1);
-    //this.updateAnimation(0.0, 0.5);
-
-    console.log("starting numbers are: " + this.startingNumbers);
-    console.log("starting dir is: " + this.currentDirection);
+    
+    this.doorHandle.rotation = crazySpin;
+    this.handleShadow.rotation = crazySpin;
+    this.updateAnimation(0, 1);
+    
   }
 
   private onActionPress(action: keyof typeof Keyboard.actions) {
@@ -120,7 +118,6 @@ export class Player extends Container {
     this.targetPosition = 0;
     this.currentDirection *= -1;
     this.targetDirection = this.currentDirection;
-    //console.log("Gamestate is now: " + this.gameState);
   }
 
   private gameUpdate()
@@ -142,9 +139,6 @@ export class Player extends Container {
   
   private updateAnimation(rotateBy: number, durationLen: number)
   {    
-    //console.log("Rot" + this.doorHandle.rotation);
-    //console.log("Length" + this.targetPosition);
-
     gsap.to(this.handleShadow, 
       {
         rotation: rotateBy, duration: durationLen
