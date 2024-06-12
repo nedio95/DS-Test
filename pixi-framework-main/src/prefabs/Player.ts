@@ -4,128 +4,51 @@ import { Container, Sprite } from "pixi.js";
 import Keyboard from "../core/Keyboard";
 //import { wait } from "../utils/misc";
 
-/*
-enum Directions {
-  LEFT = -1,
-  PASSIVE = 0,
-  RIGHT = 1,
-}
-  */
-
 const sixtyDegree = (Math.PI*0.333);
 const crazySpin = 1000; //is 1000 crazy enough of a spin ?
 const gameNumbers = 3; //How many numbers this combination lock has. 
-/*
-type AnimState = {
-  anim: string;
-  soundName?: string;
-  loop?: boolean;
-  speed?: number;
-};
-*/
-/**
- * Example class showcasing the usage of the```Animation``` and ```Keyboard``` classes
- */
+
 export class Player extends Container {
   private keyboard = Keyboard.getInstance();
   
-  private anim: Sprite; //I have no idea why, but if I try to create a sprite with ANY other name this breaks
+  private doorHandle: Sprite;
+  private handleShadow: Sprite;
 
-  private gameState = 0;
-  private currentDirection = 0;
-  private currentRotation = 0;
-  private startingNumbers = [0, 0, 0]; //ideally this would not be hardcoded
+  private gameState = 0; //This tracks at what stage the player is: 0 - No correct guesses, 1 - one correct guess, 2 - two correct guesses 
+  private currentDirection = 0; // This tracks what direction the player needs to spin for the current numnber
+  private currentRotation = 0; // This tracks at what direction the sprite should be rotated
+  private startingNumbers = [0, 0, 0]; //The rotation numbers to be made. Ideally this would not be hardcoded
 
-  //private currentRotation = 0.0;
-  private targetPosition = 0;
-  private targetDirection = 0;
+  private targetPosition = 0; //Tracks what position the player is at
+  private targetDirection = 0; //Tracks which direction the player is rotating
 
-  //currentState: AnimState | null = null;
-
-  /*
-  static animStates: Record<string, AnimState> = {
-    idle: {
-      anim: "idle",
-      loop: true,
-      speed: 0.3,
-    },
-    jump: {
-      anim: "jump",
-      soundName: "jump2",
-      loop: false,
-      speed: 0.5,
-    },
-    walk: {
-      anim: "walk",
-      loop: true,
-      speed: 1,
-    },
-    dash: {
-      anim: "dash",
-      soundName: "dash",
-      loop: false,
-      speed: 1,
-    },
-  };
-  
-  config = {
-    speed: 10,
-    turnDuration: 0.15,
-    decelerateDuration: 0.1,
-    scale: 1,
-    jump: {
-      height: 200,
-      duration: 0.3,
-      ease: "sine",
-    },
-    dash: {
-      speedMultiplier: 6,
-      duration: 0.1,
-    },
-  };
-
-  state = {
-    jumping: false,
-    dashing: false,
-    velocity: {
-      x: 0,
-      y: 0,
-    },
-  };
-
-  private decelerationTween?: gsap.core.Tween;
-  */
-  constructor() {
+  constructor() 
+  {
     super();
 
+    this.handleShadow = Sprite.from("handleShadow");
+    this.handleShadow.anchor.set(0.5);
+    this.addChild(this.handleShadow);
+    this.doorHandle = Sprite.from("handle");
+    this.doorHandle.anchor.set(0.55);
+    this.doorHandle.alpha = 0.75;
+    this.addChild(this.doorHandle);
     
 
-    this.anim = Sprite.from("handle");
-    this.anim.anchor.set(0.5);
-    this.addChild(this.anim);
-
+    //reset the game logic
     this.resetGame();
-
-    //this.setState(Player.animStates.idle);
     
+    //Detect keyboard input and run logic
     this.keyboard.onAction(({ action, buttonState }) => {
       if (buttonState === "pressed") 
         {
           this.onActionPress(action);
           this.gameUpdate();
-          this.updateAnimation();
+          this.updateAnimation((this.currentRotation * sixtyDegree), 0.5);
         }
-      //else if (buttonState === "released") this.onActionRelease(action);
     });
     
   }
-  /*
-  setState(state: AnimState) {
-    this.currentState = state;
-
-    return this.anim.play(state);
-  }
-  */
 
   private resetGame()
   {
@@ -136,14 +59,7 @@ export class Player extends Container {
     this.startingNumbers = [Math.floor(Math.random()*8+1), Math.floor(Math.random()*8+1), Math.floor(Math.random()*8+1)];
     this.targetPosition = 0;
     this.targetDirection = 0;
-    gsap.to(this.anim, 
-      {
-        rotation: crazySpin, duration: 1 
-      });
-      gsap.to(this.anim, 
-        {
-          rotation: 0, duration: 1
-        }); 
+    this.updateAnimation(crazySpin, 1);
 
     console.log("starting numbers are: " + this.startingNumbers);
     console.log("starting dir is: " + this.currentDirection);
@@ -153,11 +69,9 @@ export class Player extends Container {
     switch (action) {
       case "LEFT":
         this.setDirection(-1);
-        //if(this.targetPosition < -9) this.targetPosition += 9;
         break;
       case "RIGHT":
         this.setDirection(1);
-        //if(this.targetPosition > 9) this.targetPosition -= 9;
         break;
       case "DOWN":
         this.MakeGuess();
@@ -170,6 +84,7 @@ export class Player extends Container {
     }
   }
 
+  //Takes user input to modify the target numbers
   private setDirection(value: number)
   {
     this.targetPosition += value;
@@ -179,19 +94,22 @@ export class Player extends Container {
 
   private MakeGuess()
   {
-    if(Math.abs(this.targetPosition) != this.startingNumbers[this.gameState]) 
+    if(Math.abs(this.targetPosition) != this.startingNumbers[this.gameState]) //If the player has locked in a wrong number
       {
+        //Game over due to a wrong guess
         this.resetGame();
         console.log("GameOver due to Wrong Guess")
         return;
       }
     
-    if(this.gameState == gameNumbers-1)
+    if(this.gameState == gameNumbers-1) //if this is the final number and it is correct
       {
-        //Game Over -> VICTORY
+        //Game Over due to VICTORY
         console.log("GameOver due to VICTORY")
         return;
       }
+
+    //Move to the next game state due to a correct guess
     console.log("Good Guess")
     this.gameState += 1;
     this.targetPosition = 0;
@@ -217,157 +135,18 @@ export class Player extends Container {
   }
   
   
-  private updateAnimation()
-  {
-    //if(this.targetPosition == 0) return;
-    
-    console.log("Rot" + this.anim.rotation);
+  private updateAnimation(rotateBy: number, durationLen: number)
+  {    
+    console.log("Rot" + this.doorHandle.rotation);
     console.log("Length" + this.targetPosition);
 
-    //this.anim.rotation += 1;
-    
-    //let rotateMe:boolean = true;
-
-    gsap.to(this.anim, 
-    {
-      rotation: (/*this.anim.rotation*/ (this.currentRotation * sixtyDegree))
-    });
-    /*
-    do
-    {
-      let currentRotation = this.anim.rotation;
-      let targetRotation = this.targetDirection;
-      if((currentRotation-targetRotation)<0.05)
-        {
-          this.anim.rotation = targetRotation;
-          rotateMe = false;
-        }
-    }while(rotateMe);
-    */
-
+    gsap.to(this.handleShadow, 
+      {
+        rotation: rotateBy, duration: durationLen
+      }); 
+    gsap.to(this.doorHandle, 
+      {
+        rotation: rotateBy, duration: durationLen 
+      });
   }
-  /*
-  onActionRelease(action: keyof typeof Keyboard.actions) {
-    if (
-      (action === "LEFT" && this.state.velocity.x < 0) ||
-      (action === "RIGHT" && this.state.velocity.x > 0)
-    ) {
-      this.stopMovement();
-    }
-  }
-  */
-  /*
-  get jumping() {
-    return this.state.jumping;
-  }
-
-  private set jumping(value: boolean) {
-    this.state.jumping = value;
-    this.updateAnimState();
-  }
-
-  private set dashing(value: boolean) {
-    this.state.dashing = value;
-    this.updateAnimState();
-  }
-
-  get dashing() {
-    return this.state.dashing;
-  }
-  
-  private updateAnimState() {
-    const { walk, jump, dash, idle } = Player.animStates;
-
-    if (this.dashing) {
-      if (this.currentState === dash) return;
-
-      this.setState(dash);
-    } else if (this.jumping) {
-      if (this.currentState === jump || this.currentState === dash) return;
-
-      this.setState(jump);
-    } else if (this.state.velocity.x !== 0) {
-      if (this.currentState === walk) return;
-
-      this.setState(walk);
-    } else {
-      if (this.currentState === idle) return;
-
-      this.setState(idle);
-    }
-  }
-
-  stopMovement() {
-    this.decelerationTween?.progress(1);
-
-    this.decelerationTween = gsap.to(this.state.velocity, {
-      duration: this.config.decelerateDuration,
-      x: 0,
-      ease: "power1.in",
-      onComplete: () => {
-        this.updateAnimState();
-      },
-    });
-  }
-
-  async move(direction: Directions) {
-    if (this.dashing) return;
-
-    this.decelerationTween?.progress(1);
-
-    this.state.velocity.x = direction * this.config.speed;
-
-    this.updateAnimState();
-
-    gsap.to(this.scale, {
-      duration: this.config.turnDuration,
-      x: this.config.scale * direction,
-    });
-  }
-
-  async dash() {
-    if (this.state.velocity.x === 0) return;
-
-    this.dashing = true;
-
-    this.decelerationTween?.progress(1);
-
-    this.state.velocity.x =
-      this.config.speed *
-      this.config.dash.speedMultiplier *
-      this.getDirection();
-
-    await wait(this.config.dash.duration);
-
-    this.state.velocity.x = this.config.speed * this.getDirection();
-
-    this.dashing = false;
-  }
-
-  private getDirection() {
-    if (this.state.velocity.x === 0)
-      return this.scale.x > 0 ? Directions.RIGHT : Directions.LEFT;
-
-    return this.state.velocity.x > 0 ? Directions.RIGHT : Directions.LEFT;
-  }
-
-  async jump() {
-    if (this.jumping) return;
-
-    const { height, duration, ease } = this.config.jump;
-
-    this.jumping = true;
-
-    await gsap.to(this, {
-      duration,
-      y: `-=${height}`,
-      ease: `${ease}.out`,
-      yoyo: true,
-      yoyoEase: `${ease}.in`,
-      repeat: 1,
-    });
-
-    this.jumping = false;
-  }
-  */
 }
