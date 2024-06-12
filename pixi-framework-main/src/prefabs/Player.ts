@@ -12,6 +12,7 @@ let shadowOffset = 20;
 export class Player extends Container {
   private keyboard = Keyboard.getInstance();
   
+  //private door: Sprite;
   private doorHandle: Sprite;
   private handleShadow: Sprite;
 
@@ -26,10 +27,15 @@ export class Player extends Container {
   constructor() 
   {
     super();
-
+    /*
+    this.door = Sprite.from("door");
+    this.door.anchor.set(0.5);
+    this.addChild(this.door);
+    */
     this.handleShadow = Sprite.from("handleShadow");
     this.handleShadow.anchor.set(0.5);
     this.addChild(this.handleShadow);
+
     this.doorHandle = Sprite.from("handle");
     this.doorHandle.anchor.set(0.5);
     this.handleShadow.x += shadowOffset;

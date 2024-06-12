@@ -9,6 +9,7 @@ const gameNumbers = 3; //How many numbers this combination lock has.
 let shadowOffset = 20;
 export class Player extends Container {
     keyboard = Keyboard.getInstance();
+    //private door: Sprite;
     doorHandle;
     handleShadow;
     gameState = 0; //This tracks at what stage the player is: 0 - No correct guesses, 1 - one correct guess, 2 - two correct guesses 
@@ -19,6 +20,11 @@ export class Player extends Container {
     targetDirection = 0; //Tracks which direction the player is rotating
     constructor() {
         super();
+        /*
+        this.door = Sprite.from("door");
+        this.door.anchor.set(0.5);
+        this.addChild(this.door);
+        */
         this.handleShadow = Sprite.from("handleShadow");
         this.handleShadow.anchor.set(0.5);
         this.addChild(this.handleShadow);
