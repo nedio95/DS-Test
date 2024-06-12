@@ -4,7 +4,7 @@ import { Container, Sprite } from "pixi.js";
 import Keyboard from "../core/Keyboard";
 //import { wait } from "../utils/misc";
 const sixtyDegree = (Math.PI * 0.333);
-const crazySpin = 1000; //is 1000 crazy enough of a spin ?
+//const crazySpin = 1000; //is 1000 crazy enough of a spin ?
 const gameNumbers = 3; //How many numbers this combination lock has. 
 export class Player extends Container {
     keyboard = Keyboard.getInstance();
@@ -23,6 +23,7 @@ export class Player extends Container {
         this.addChild(this.handleShadow);
         this.doorHandle = Sprite.from("handle");
         this.doorHandle.anchor.set(0.55);
+        this.doorHandle.alpha = 0.75;
         this.addChild(this.doorHandle);
         //reset the game logic
         this.resetGame();
@@ -31,7 +32,9 @@ export class Player extends Container {
             if (buttonState === "pressed") {
                 this.onActionPress(action);
                 this.gameUpdate();
+                console.log("Rotation is" + this.currentRotation * sixtyDegree);
                 this.updateAnimation((this.currentRotation * sixtyDegree), 0.5);
+                console.log("Rotation is" + this.currentRotation * sixtyDegree);
             }
         });
     }
@@ -43,7 +46,8 @@ export class Player extends Container {
         this.startingNumbers = [Math.floor(Math.random() * 8 + 1), Math.floor(Math.random() * 8 + 1), Math.floor(Math.random() * 8 + 1)];
         this.targetPosition = 0;
         this.targetDirection = 0;
-        this.updateAnimation(crazySpin, 1);
+        //this.updateAnimation(crazySpin, 1);
+        //this.updateAnimation(0.0, 0.5);
         console.log("starting numbers are: " + this.startingNumbers);
         console.log("starting dir is: " + this.currentDirection);
     }
@@ -82,16 +86,16 @@ export class Player extends Container {
         if (this.gameState == gameNumbers - 1) //if this is the final number and it is correct
          {
             //Game Over due to VICTORY
-            console.log("GameOver due to VICTORY");
+            console.log("GameOver due to VICTORY - You won!");
             return;
         }
         //Move to the next game state due to a correct guess
-        console.log("Good Guess");
+        console.log("Good Guess, next number, please");
         this.gameState += 1;
         this.targetPosition = 0;
         this.currentDirection *= -1;
         this.targetDirection = this.currentDirection;
-        console.log("Gamestate is now: " + this.gameState);
+        //console.log("Gamestate is now: " + this.gameState);
     }
     gameUpdate() {
         if (this.targetDirection != this.currentDirection) {
@@ -106,8 +110,8 @@ export class Player extends Container {
         }
     }
     updateAnimation(rotateBy, durationLen) {
-        console.log("Rot" + this.doorHandle.rotation);
-        console.log("Length" + this.targetPosition);
+        //console.log("Rot" + this.doorHandle.rotation);
+        //console.log("Length" + this.targetPosition);
         gsap.to(this.handleShadow, {
             rotation: rotateBy, duration: durationLen
         });

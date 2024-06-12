@@ -30,7 +30,9 @@ export class Player extends Container {
     this.handleShadow.anchor.set(0.5);
     this.addChild(this.handleShadow);
     this.doorHandle = Sprite.from("handle");
-    this.doorHandle.anchor.set(0.55);
+    this.doorHandle.anchor.set(0.5);
+    this.doorHandle.x += 5;
+    this.doorHandle.y -= 5;
     this.doorHandle.alpha = 0.75;
     this.addChild(this.doorHandle);
     
@@ -44,7 +46,9 @@ export class Player extends Container {
         {
           this.onActionPress(action);
           this.gameUpdate();
+          console.log("Rotation is" + this.currentRotation * sixtyDegree);
           this.updateAnimation((this.currentRotation * sixtyDegree), 0.5);
+          console.log("Rotation is" + this.currentRotation * sixtyDegree);
         }
     });
     
@@ -60,6 +64,7 @@ export class Player extends Container {
     this.targetPosition = 0;
     this.targetDirection = 0;
     this.updateAnimation(crazySpin, 1);
+    //this.updateAnimation(0.0, 0.5);
 
     console.log("starting numbers are: " + this.startingNumbers);
     console.log("starting dir is: " + this.currentDirection);
@@ -105,17 +110,17 @@ export class Player extends Container {
     if(this.gameState == gameNumbers-1) //if this is the final number and it is correct
       {
         //Game Over due to VICTORY
-        console.log("GameOver due to VICTORY")
+        console.log("GameOver due to VICTORY - You won!")
         return;
       }
 
     //Move to the next game state due to a correct guess
-    console.log("Good Guess")
+    console.log("Good Guess, next number, please")
     this.gameState += 1;
     this.targetPosition = 0;
     this.currentDirection *= -1;
     this.targetDirection = this.currentDirection;
-    console.log("Gamestate is now: " + this.gameState);
+    //console.log("Gamestate is now: " + this.gameState);
   }
 
   private gameUpdate()
@@ -137,8 +142,8 @@ export class Player extends Container {
   
   private updateAnimation(rotateBy: number, durationLen: number)
   {    
-    console.log("Rot" + this.doorHandle.rotation);
-    console.log("Length" + this.targetPosition);
+    //console.log("Rot" + this.doorHandle.rotation);
+    //console.log("Length" + this.targetPosition);
 
     gsap.to(this.handleShadow, 
       {
