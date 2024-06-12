@@ -11,6 +11,8 @@ enum Directions {
 }
   */
 const sixtyDegree = (Math.PI * 0.333);
+const crazySpin = 1000; //is 1000 crazy enough of a spin ?
+const gameNumbers = 3; //How many numbers this combination lock has. 
 /*
 type AnimState = {
   anim: string;
@@ -27,7 +29,8 @@ export class Player extends Container {
     anim; //I have no idea why, but if I try to create a sprite with ANY other name this breaks
     gameState = 0;
     currentDirection = 0;
-    startingNumbers = [0, 0, 0];
+    currentRotation = 0;
+    startingNumbers = [0, 0, 0]; //ideally this would not be hardcoded
     //private currentRotation = 0.0;
     targetPosition = 0;
     targetDirection = 0;
@@ -112,11 +115,15 @@ export class Player extends Container {
         console.log("Game is reset");
         this.gameState = 0;
         this.currentDirection = (Math.random() >= 0.5) ? 1 : -1;
+        this.currentRotation = 0;
         this.startingNumbers = [Math.floor(Math.random() * 8 + 1), Math.floor(Math.random() * 8 + 1), Math.floor(Math.random() * 8 + 1)];
         this.targetPosition = 0;
         this.targetDirection = 0;
         gsap.to(this.anim, {
-            rotation: 145, duration: 1
+            rotation: crazySpin, duration: 1
+        });
+        gsap.to(this.anim, {
+            rotation: 0, duration: 1
         });
         console.log("starting numbers are: " + this.startingNumbers);
         console.log("starting dir is: " + this.currentDirection);
@@ -144,6 +151,7 @@ export class Player extends Container {
     setDirection(value) {
         this.targetPosition += value;
         this.targetDirection = value;
+        this.currentRotation += value;
     }
     MakeGuess() {
         if (Math.abs(this.targetPosition) != this.startingNumbers[this.gameState]) {
@@ -151,7 +159,7 @@ export class Player extends Container {
             console.log("GameOver due to Wrong Guess");
             return;
         }
-        if (this.gameState == 2) {
+        if (this.gameState == gameNumbers - 1) {
             //Game Over -> VICTORY
             console.log("GameOver due to VICTORY");
             return;
@@ -182,7 +190,7 @@ export class Player extends Container {
         //this.anim.rotation += 1;
         //let rotateMe:boolean = true;
         gsap.to(this.anim, {
-            rotation: ( /*this.anim.rotation*/+(this.targetPosition * sixtyDegree))
+            rotation: ( /*this.anim.rotation*/(this.currentRotation * sixtyDegree))
         });
         /*
         do

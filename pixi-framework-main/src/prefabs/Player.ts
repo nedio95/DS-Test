@@ -13,6 +13,8 @@ enum Directions {
   */
 
 const sixtyDegree = (Math.PI*0.333);
+const crazySpin = 1000; //is 1000 crazy enough of a spin ?
+const gameNumbers = 3; //How many numbers this combination lock has. 
 /*
 type AnimState = {
   anim: string;
@@ -31,14 +33,14 @@ export class Player extends Container {
 
   private gameState = 0;
   private currentDirection = 0;
-  private startingNumbers = [0, 0, 0];
+  private currentRotation = 0;
+  private startingNumbers = [0, 0, 0]; //ideally this would not be hardcoded
 
   //private currentRotation = 0.0;
   private targetPosition = 0;
   private targetDirection = 0;
 
   //currentState: AnimState | null = null;
-
 
   /*
   static animStates: Record<string, AnimState> = {
@@ -130,13 +132,18 @@ export class Player extends Container {
     console.log("Game is reset");
     this.gameState = 0;
     this.currentDirection = (Math.random()>=0.5)? 1 : -1;
+    this.currentRotation = 0;
     this.startingNumbers = [Math.floor(Math.random()*8+1), Math.floor(Math.random()*8+1), Math.floor(Math.random()*8+1)];
     this.targetPosition = 0;
     this.targetDirection = 0;
     gsap.to(this.anim, 
       {
-        rotation: 145, duration: 1
+        rotation: crazySpin, duration: 1 
       });
+      gsap.to(this.anim, 
+        {
+          rotation: 0, duration: 1
+        }); 
 
     console.log("starting numbers are: " + this.startingNumbers);
     console.log("starting dir is: " + this.currentDirection);
@@ -167,6 +174,7 @@ export class Player extends Container {
   {
     this.targetPosition += value;
     this.targetDirection = value;
+    this.currentRotation += value;
   }
 
   private MakeGuess()
@@ -178,7 +186,7 @@ export class Player extends Container {
         return;
       }
     
-    if(this.gameState == 2)
+    if(this.gameState == gameNumbers-1)
       {
         //Game Over -> VICTORY
         console.log("GameOver due to VICTORY")
@@ -222,7 +230,7 @@ export class Player extends Container {
 
     gsap.to(this.anim, 
     {
-      rotation: (/*this.anim.rotation*/ + (this.targetPosition * sixtyDegree))
+      rotation: (/*this.anim.rotation*/ (this.currentRotation * sixtyDegree))
     });
     /*
     do

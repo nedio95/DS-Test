@@ -37,7 +37,7 @@ export default class Keyboard extends utils.EventEmitter {
 
     this.listenToKeyEvents();
   }
-
+  
   private listenToKeyEvents() {
     document.addEventListener("keydown", (e) => this.onKeyPress(e.code));
     document.addEventListener("keyup", (e) => this.onKeyRelease(e.code));
