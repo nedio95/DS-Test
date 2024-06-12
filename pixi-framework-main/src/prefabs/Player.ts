@@ -6,7 +6,8 @@ import Keyboard from "../core/Keyboard";
 
 const sixtyDegree = (Math.PI*0.333);
 const crazySpin = 1000; //is 1000 crazy enough of a spin ?
-const gameNumbers = 3; //How many numbers this combination lock has. 
+const gameNumbers = 3; //How many numbers this combination lock has.
+let shadowOffset = 20; 
 
 export class Player extends Container {
   private keyboard = Keyboard.getInstance();
@@ -31,9 +32,9 @@ export class Player extends Container {
     this.addChild(this.handleShadow);
     this.doorHandle = Sprite.from("handle");
     this.doorHandle.anchor.set(0.5);
-    this.doorHandle.x += 5;
-    this.doorHandle.y -= 5;
-    this.doorHandle.alpha = 0.75;
+    this.handleShadow.x += shadowOffset;
+    this.handleShadow.y += shadowOffset;
+    this.handleShadow.alpha = 0.75;
     this.addChild(this.doorHandle);
     
 
@@ -56,16 +57,19 @@ export class Player extends Container {
   {
     console.log("Game is reset");
     this.gameState = 0;
+
     this.currentDirection = (Math.random()>=0.5)? 1 : -1;
     this.currentRotation = 0;
     this.startingNumbers = [Math.floor(Math.random()*8+1), Math.floor(Math.random()*8+1), Math.floor(Math.random()*8+1)];
+    console.log("Your numbers are: " + this.startingNumbers);
+    console.log("The starting direction is: " + this.currentDirection);
+
     this.targetPosition = 0;
     this.targetDirection = 0;
     
     this.doorHandle.rotation = crazySpin;
     this.handleShadow.rotation = crazySpin;
     this.updateAnimation(0, 1);
-    
   }
 
   private onActionPress(action: keyof typeof Keyboard.actions) {

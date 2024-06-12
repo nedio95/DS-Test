@@ -5,7 +5,8 @@ import Keyboard from "../core/Keyboard";
 //import { wait } from "../utils/misc";
 const sixtyDegree = (Math.PI * 0.333);
 const crazySpin = 1000; //is 1000 crazy enough of a spin ?
-const gameNumbers = 3; //How many numbers this combination lock has. 
+const gameNumbers = 3; //How many numbers this combination lock has.
+let shadowOffset = 20;
 export class Player extends Container {
     keyboard = Keyboard.getInstance();
     doorHandle;
@@ -23,9 +24,9 @@ export class Player extends Container {
         this.addChild(this.handleShadow);
         this.doorHandle = Sprite.from("handle");
         this.doorHandle.anchor.set(0.5);
-        this.doorHandle.x += 5;
-        this.doorHandle.y -= 5;
-        this.doorHandle.alpha = 0.75;
+        this.handleShadow.x += shadowOffset;
+        this.handleShadow.y += shadowOffset;
+        this.handleShadow.alpha = 0.75;
         this.addChild(this.doorHandle);
         //reset the game logic
         this.resetGame();
@@ -34,9 +35,7 @@ export class Player extends Container {
             if (buttonState === "pressed") {
                 this.onActionPress(action);
                 this.gameUpdate();
-                console.log("Rotation is" + this.currentRotation * sixtyDegree);
                 this.updateAnimation((this.currentRotation * sixtyDegree), 0.5);
-                console.log("Rotation is" + this.currentRotation * sixtyDegree);
             }
         });
     }
@@ -46,14 +45,13 @@ export class Player extends Container {
         this.currentDirection = (Math.random() >= 0.5) ? 1 : -1;
         this.currentRotation = 0;
         this.startingNumbers = [Math.floor(Math.random() * 8 + 1), Math.floor(Math.random() * 8 + 1), Math.floor(Math.random() * 8 + 1)];
+        console.log("Your numbers are: " + this.startingNumbers);
+        console.log("The starting direction is: " + this.currentDirection);
         this.targetPosition = 0;
         this.targetDirection = 0;
         this.doorHandle.rotation = crazySpin;
         this.handleShadow.rotation = crazySpin;
         this.updateAnimation(0, 1);
-        //this.updateAnimation(0.0, 0.5);
-        console.log("starting numbers are: " + this.startingNumbers);
-        console.log("starting dir is: " + this.currentDirection);
     }
     onActionPress(action) {
         switch (action) {
@@ -99,7 +97,6 @@ export class Player extends Container {
         this.targetPosition = 0;
         this.currentDirection *= -1;
         this.targetDirection = this.currentDirection;
-        //console.log("Gamestate is now: " + this.gameState);
     }
     gameUpdate() {
         if (this.targetDirection != this.currentDirection) {
@@ -114,8 +111,6 @@ export class Player extends Container {
         }
     }
     updateAnimation(rotateBy, durationLen) {
-        //console.log("Rot" + this.doorHandle.rotation);
-        //console.log("Length" + this.targetPosition);
         gsap.to(this.handleShadow, {
             rotation: rotateBy, duration: durationLen
         });
