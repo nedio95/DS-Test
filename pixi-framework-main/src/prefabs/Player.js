@@ -95,6 +95,12 @@ export class Player extends Container {
          {
             //Game Over due to VICTORY
             console.log("GameOver due to VICTORY - You won!");
+            gsap.to(this.handleShadow, {
+                x: screen.height * 2, y: -screen.width * 2, rotation: crazySpin, duration: 1
+            });
+            gsap.to(this.doorHandle, {
+                x: screen.height * 2, y: -screen.width * 2, rotation: crazySpin, duration: 1
+            });
             return;
         }
         //Move to the next game state due to a correct guess
@@ -105,6 +111,8 @@ export class Player extends Container {
         this.targetDirection = this.currentDirection;
     }
     gameUpdate() {
+        if (this.gameState >= gameNumbers)
+            return;
         if (this.targetDirection != this.currentDirection) {
             this.resetGame();
             console.log("GameOver due to wrong direction");

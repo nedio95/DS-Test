@@ -119,6 +119,15 @@ export class Player extends Container {
       {
         //Game Over due to VICTORY
         console.log("GameOver due to VICTORY - You won!")
+        gsap.to(this.handleShadow, 
+          {
+            x: screen.height*2, y: -screen.width*2, rotation: crazySpin, duration: 1
+          }); 
+        gsap.to(this.doorHandle, 
+          {
+            x: screen.height*2, y: -screen.width*2, rotation: crazySpin, duration: 1 
+          });
+        
         return;
       }
 
@@ -132,6 +141,8 @@ export class Player extends Container {
 
   private gameUpdate()
   {
+    if(this.gameState >= gameNumbers) return;
+
     if(this.targetDirection != this.currentDirection) 
       {
         this.resetGame();
