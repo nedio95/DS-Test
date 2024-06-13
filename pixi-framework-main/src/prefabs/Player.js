@@ -3,16 +3,27 @@ import { Container, Sprite } from "pixi.js";
 //import SpritesheetAnimation from "../core/SpritesheetAnimation";
 import Keyboard from "../core/Keyboard";
 //import { wait } from "../utils/misc";
+//import { ShineEffect } from "../prefabs/ShineEffect";
 const sixtyDegree = (Math.PI * 0.333);
 const crazySpin = 1000; //is 1000 crazy enough of a spin ?
 const gameNumbers = 3; //How many numbers this combination lock has.
-let shadowOffset = 20;
+const shadowOffset = 0.05; //What % of the screen space are shadows offset by
+//The direction for shadows can also be moved to be customizable
+const shineOffset = 5;
+const handleZ = 7;
+const handleShadowZ = 6;
+const doorOpenZ = 5;
+//const doorOpenShadowZ = 4;
+const doorZ = 3;
+const shineZ = 2;
 export class Player extends Container {
     keyboard = Keyboard.getInstance();
     door;
     doorOpen;
     doorHandle;
     handleShadow;
+    //private newShine: ShineEffect;
+    testShineEffect = [];
     gameState = 0; //This tracks at what stage the player is: 0 - No correct guesses, 1 - one correct guess, 2 - two correct guesses 
     currentDirection = 0; // This tracks what direction the player needs to spin for the current numnber
     currentRotation = 0; // This tracks at what direction the sprite should be rotated
@@ -21,22 +32,40 @@ export class Player extends Container {
     targetDirection = 0; //Tracks which direction the player is rotating
     constructor() {
         super();
+        //this.newShine = new ShineEffect();
+        this.setShine(0);
+        this.setShine(1);
+        this.setShine(2);
+        /*
+        this.testShineEffect[0] = Sprite.from("blink");
+        this.testShineEffect[1] = */
+        //this.testShineEffect.anchor.set(0.5);
+        //this.testShineEffect.zIndex = shineZ;
+        //this.addChild(this.testShineEffect);
         this.door = Sprite.from("door");
         this.door.anchor.set(0.5);
+        this.door.zIndex = doorZ;
         this.addChild(this.door);
+        /*
+        this.aShineEffect = Sprite.from("blink");
+        this.addChild(this.aShineEffect);
+         */
         this.doorOpen = Sprite.from("doorOpen");
         this.doorOpen.anchor.set(0.5);
         this.doorOpen.x += this.door.width / 3;
         this.doorOpen.alpha = 0;
+        this.doorOpen.zIndex = doorOpenZ;
         this.addChild(this.doorOpen);
         this.handleShadow = Sprite.from("handleShadow");
         this.handleShadow.anchor.set(0.5);
+        this.handleShadow.zIndex = handleZ;
         this.addChild(this.handleShadow);
         this.doorHandle = Sprite.from("handle");
         this.doorHandle.anchor.set(0.5);
-        this.handleShadow.x += shadowOffset;
-        this.handleShadow.y += shadowOffset;
+        this.handleShadow.x += screen.height * shadowOffset;
+        this.handleShadow.y += screen.width * shadowOffset;
         this.handleShadow.alpha = 0.75;
+        this.handleShadow.zIndex = handleShadowZ;
         this.addChild(this.doorHandle);
         //reset the game logic
         this.resetGame();
@@ -130,14 +159,14 @@ export class Player extends Container {
         gsap.to(this.doorHandle, {
             x: screen.height * 2, y: -screen.width * 2, rotation: crazySpin, duration: 1
         });
-        /*gsap.to(this.door,
-          {
-            alpha: 0
-          });*/
         let animation = gsap.timeline({});
-        animation.from(this.door, { alpha: 1, stagger: 0.5 })
-            .to(this.door, { alpha: 0, stagger: 0.5 }, 0.5)
-            .to(this.doorOpen, { alpha: 1, duration: 0.0 });
+        animation.from(this.door, { alpha: 1, stagger: 1, })
+            //.to(this.door, {alpha:0, stagger:0.5}, 0.5)
+            .to(this.doorOpen, { alpha: 1, duration: 0.0 })
+            .to(this.door, { alpha: 0, duration: 0.0 });
+        this.animateShine(0);
+        this.animateShine(1);
+        this.animateShine(2);
     }
     updateAnimation(rotateBy, durationLen) {
         gsap.to(this.handleShadow, {
@@ -145,6 +174,26 @@ export class Player extends Container {
         });
         gsap.to(this.doorHandle, {
             rotation: rotateBy, duration: durationLen
+        });
+    }
+    setShine(index) {
+        this.testShineEffect[index] = Sprite.from("blink");
+        this.testShineEffect[index].anchor.set(0.5);
+        this.testShineEffect[index].zIndex = shineZ;
+        this.addChild(this.testShineEffect[index]);
+    }
+    animateShine(whichShine) {
+        this.testShineEffect[whichShine].x = screen.width / 2 - screen.width * Math.floor(Math.random() * shineOffset / 100);
+        this.testShineEffect[whichShine].y = screen.height / 2 - screen.height * Math.floor(Math.random() * shineOffset / 100);
+        gsap.fromTo(this.testShineEffect[whichShine], {
+            x: screen.width / 2 - screen.width * (Math.floor(Math.random() * shineOffset) / 100.0),
+            y: screen.height / 2 - screen.height * (Math.floor(Math.random() * shineOffset) / 100.0),
+            duration: 1
+        }, {
+            x: screen.width / 2 - screen.width * (Math.floor(Math.random() * shineOffset) / 100.0 + 5.0),
+            y: screen.height / 2 - screen.height * (Math.floor(Math.random() * shineOffset) / 100.0 + 5.0),
+            duration: 1,
+            repeat: -1
         });
     }
 }

@@ -5,6 +5,8 @@ import Scene from "../core/Scene";
 //import SpineAnimation from "../core/SpineAnimation"; // We're not doing a spine anim (for now)
 import { Sprite } from "pixi.js";
 import { centerObjects } from "../utils/misc";
+const playerZ = 10;
+const backgroundZ = -10;
 export default class Game extends Scene {
     name = "Game";
     player;
@@ -12,7 +14,9 @@ export default class Game extends Scene {
     load() {
         this.background = Sprite.from("bg"); // We don't need a paralax background for this project design -  
         //Feature idea: The player is able to look around the whole treasure room, maybe there are some hidden clues.
+        this.background.zIndex = backgroundZ;
         this.player = new Player();
+        this.player.zIndex = playerZ;
         this.rescaleBackground(window.innerWidth, window.innerHeight);
         this.placeObjects();
         //this.background.initPlayerMovement(this.player);
