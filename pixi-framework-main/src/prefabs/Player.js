@@ -130,10 +130,14 @@ export class Player extends Container {
         gsap.to(this.doorHandle, {
             x: screen.height * 2, y: -screen.width * 2, rotation: crazySpin, duration: 1
         });
-        /*
-            gsap.fromTo(this.door{}, this.
-        
-            );*/
+        /*gsap.to(this.door,
+          {
+            alpha: 0
+          });*/
+        let animation = gsap.timeline({});
+        animation.from(this.door, { alpha: 1, stagger: 0.5 })
+            .to(this.door, { alpha: 0, stagger: 0.5 }, 0.5)
+            .to(this.doorOpen, { alpha: 1, duration: 0.0 });
     }
     updateAnimation(rotateBy, durationLen) {
         gsap.to(this.handleShadow, {
