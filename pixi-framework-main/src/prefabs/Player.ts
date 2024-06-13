@@ -10,7 +10,7 @@ const crazySpin = 1000; //is 1000 crazy enough of a spin ?
 const gameNumbers = 3; //How many numbers this combination lock has.
 const shadowOffset = 0.05;  //What % of the screen space are shadows offset by
 //The direction for shadows can also be moved to be customizable
-const shineOffset = 5;
+//const shineOffset = 20;
 
 const handleZ = 7;
 const handleShadowZ = 6;
@@ -234,22 +234,19 @@ export class Player extends Container {
   }
 
   animateShine(whichShine: number)
-  {
-    this.testShineEffect[whichShine].x = screen.width/2 - screen.width*Math.floor(Math.random()*shineOffset/100);
-    this.testShineEffect[whichShine].y = screen.height/2 - screen.height*Math.floor(Math.random()*shineOffset/100);
-
-    gsap.fromTo(this.testShineEffect[whichShine], 
-      {
-        x: screen.width/2 - screen.width*(Math.floor(Math.random()*shineOffset)/100.0), 
-        y: screen.height/2 - screen.height*(Math.floor(Math.random()*shineOffset)/100.0),
-        duration: 1
+  {  
+     gsap.fromTo(this.testShineEffect[whichShine], 
+      { 
+        x: "random(screen.width/2, screen.width/2-200)", //screen.width/2 - screen.width*(Math.floor(Math.random()*shineOffset)/100.0),  //this is fine
+        y: "random(screen.height/2, screen.height/2+500 )", //screen.height/2 - screen.height*(Math.floor(Math.random()*shineOffset)/100.0),
+        duration: "random(0.5, 2.0)"
       }, 
       {
-        x: screen.width/2 - screen.width*(Math.floor(Math.random()*shineOffset)/100.0+5.0), 
-        y: screen.height/2 - screen.height*(Math.floor(Math.random()*shineOffset)/100.0+5.0),
-        duration: 1,
-        repeat: -1
+        x: "random(-100, -200)", //screen.width/2 - 1000, // screen.width*(Math.floor(Math.random()*shineOffset)/100.0+5.0), //Why is this shooting into the distance ???
+        y: "random(-100, -200)", //screen.height/2 - 1000, // screen.height*(Math.floor(Math.random()*shineOffset)/100.0+5.0), //Is this working in some sort of local space ???????????????
+        duration: "random(0.5, 2.0)",
+        repeatRefresh: true,
+        repeat: -1 //does this stop the execution of the random funtions ?
       });
-
   }
 }
