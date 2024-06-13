@@ -4,6 +4,7 @@ import { Container, Sprite } from "pixi.js";
 import Keyboard from "../core/Keyboard";
 //import { wait } from "../utils/misc";
 //import { ShineEffect } from "../prefabs/ShineEffect";
+import { sound } from '@pixi/sound';
 const sixtyDegree = (Math.PI * 0.333);
 const crazySpin = 1000; //is 1000 crazy enough of a spin ?
 const gameNumbers = 3; //How many numbers this combination lock has.
@@ -16,6 +17,9 @@ const doorOpenZ = 5;
 //const doorOpenShadowZ = 4;
 const doorZ = 3;
 const shineZ = 2;
+const audioQueue = sound.add("keyClick.mp3", "../../public/Fame/sounds");
+//const audioBuffer: AudioBuffer;
+//const audioSource: AudioBufferSourceNode;
 export class Player extends Container {
     keyboard = Keyboard.getInstance();
     door;
@@ -32,6 +36,7 @@ export class Player extends Container {
     targetDirection = 0; //Tracks which direction the player is rotating
     constructor() {
         super();
+        audioQueue.play();
         //this.newShine = new ShineEffect();
         this.setShine(0);
         this.setShine(1);
@@ -115,6 +120,8 @@ export class Player extends Container {
         this.targetPosition += value;
         this.targetDirection = value;
         this.currentRotation += value;
+        if (Math.abs(this.targetPosition) == this.startingNumbers[this.gameState])
+            audioQueue.play();
     }
     MakeGuess() {
         if (Math.abs(this.targetPosition) != this.startingNumbers[this.gameState]) //If the player has locked in a wrong number

@@ -4,6 +4,7 @@ import { Container, Sprite } from "pixi.js";
 import Keyboard from "../core/Keyboard";
 //import { wait } from "../utils/misc";
 //import { ShineEffect } from "../prefabs/ShineEffect";
+//import { sound } from '@pixi/sound';
 
 const sixtyDegree = (Math.PI*0.333);
 const crazySpin = 1000; //is 1000 crazy enough of a spin ?
@@ -19,6 +20,12 @@ const doorOpenZ = 5;
 const doorZ = 3;
 const shineZ = 2;
 
+//const audioQueue = sound.add("keyClick.mp3", "../../public/Fame/sounds");
+
+//const audioBuffer: AudioBuffer;
+//const audioSource: AudioBufferSourceNode;
+
+
 export class Player extends Container {
   private keyboard = Keyboard.getInstance();
   
@@ -28,7 +35,6 @@ export class Player extends Container {
   private handleShadow: Sprite;
   //private newShine: ShineEffect;
   private testShineEffect: Sprite[] = [];
-
 
   private gameState = 0; //This tracks at what stage the player is: 0 - No correct guesses, 1 - one correct guess, 2 - two correct guesses 
   private currentDirection = 0; // This tracks what direction the player needs to spin for the current numnber
@@ -41,6 +47,8 @@ export class Player extends Container {
   constructor() 
   {
     super();
+
+    //audioQueue.play();
     
     //this.newShine = new ShineEffect();
     this.setShine(0);
@@ -142,6 +150,7 @@ export class Player extends Container {
     this.targetPosition += value;
     this.targetDirection = value;
     this.currentRotation += value;
+    //if(Math.abs(this.targetPosition) == this.startingNumbers[this.gameState]) audioQueue.play();
   }
 
   private MakeGuess()
