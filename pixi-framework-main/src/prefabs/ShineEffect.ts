@@ -1,3 +1,5 @@
+//Currently this has no purpose
+
 import gsap from "gsap";
 import { Container, Sprite } from "pixi.js";
 

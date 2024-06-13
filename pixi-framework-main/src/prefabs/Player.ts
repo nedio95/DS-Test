@@ -4,7 +4,7 @@ import { Container, Sprite } from "pixi.js";
 import Keyboard from "../core/Keyboard";
 //import { wait } from "../utils/misc";
 //import { ShineEffect } from "../prefabs/ShineEffect";
-//import { sound } from '@pixi/sound';
+import { sound } from '@pixi/sound';
 
 const sixtyDegree = (Math.PI*0.333);
 const crazySpin = 1000; //is 1000 crazy enough of a spin ?
@@ -20,7 +20,7 @@ const doorOpenZ = 5;
 const doorZ = 3;
 const shineZ = 2;
 
-//const audioQueue = sound.add("keyClick.mp3", "../../public/Fame/sounds");
+const audioQueue = sound.add("keyClick.mp3", "../../public/Fame/sounds");
 
 //const audioBuffer: AudioBuffer;
 //const audioSource: AudioBufferSourceNode;
@@ -48,27 +48,14 @@ export class Player extends Container {
   {
     super();
 
-    //audioQueue.play();
-    
-    //this.newShine = new ShineEffect();
     this.setShine(0);
     this.setShine(1);
     this.setShine(2);
-    /*
-    this.testShineEffect[0] = Sprite.from("blink");
-    this.testShineEffect[1] = */
-    //this.testShineEffect.anchor.set(0.5);
-    //this.testShineEffect.zIndex = shineZ;
-    //this.addChild(this.testShineEffect);
     
     this.door = Sprite.from("door");
     this.door.anchor.set(0.5);
     this.door.zIndex = doorZ;
     this.addChild(this.door);
-    /*
-    this.aShineEffect = Sprite.from("blink");
-    this.addChild(this.aShineEffect);
-     */
 
     this.doorOpen = Sprite.from("doorOpen");
     this.doorOpen.anchor.set(0.5);
@@ -150,7 +137,7 @@ export class Player extends Container {
     this.targetPosition += value;
     this.targetDirection = value;
     this.currentRotation += value;
-    //if(Math.abs(this.targetPosition) == this.startingNumbers[this.gameState]) audioQueue.play();
+    if(Math.abs(this.targetPosition) == this.startingNumbers[this.gameState]) audioQueue.play();
   }
 
   private MakeGuess()

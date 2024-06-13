@@ -36,25 +36,13 @@ export class Player extends Container {
     targetDirection = 0; //Tracks which direction the player is rotating
     constructor() {
         super();
-        audioQueue.play();
-        //this.newShine = new ShineEffect();
         this.setShine(0);
         this.setShine(1);
         this.setShine(2);
-        /*
-        this.testShineEffect[0] = Sprite.from("blink");
-        this.testShineEffect[1] = */
-        //this.testShineEffect.anchor.set(0.5);
-        //this.testShineEffect.zIndex = shineZ;
-        //this.addChild(this.testShineEffect);
         this.door = Sprite.from("door");
         this.door.anchor.set(0.5);
         this.door.zIndex = doorZ;
         this.addChild(this.door);
-        /*
-        this.aShineEffect = Sprite.from("blink");
-        this.addChild(this.aShineEffect);
-         */
         this.doorOpen = Sprite.from("doorOpen");
         this.doorOpen.anchor.set(0.5);
         this.doorOpen.x += this.door.width / 3;
